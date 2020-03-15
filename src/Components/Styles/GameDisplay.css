@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+.game-container {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+}
+
 .header {
   color: gray;
 }

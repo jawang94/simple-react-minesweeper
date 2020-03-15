@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { Button } from 'reactstrap';
 import PropTypes from 'prop-types';
 import GridSquareContainer from './GridSquareContainer';
 import './Styles/GridBoardDisplay.css';
@@ -11,6 +12,7 @@ const propTypes = {
   bombCount: PropTypes.number,
   flagsPlaced: PropTypes.number,
   placeFlag: PropTypes.func,
+  refreshBoard: PropTypes.func,
 };
 
 const defaultProps = {
@@ -19,11 +21,21 @@ const defaultProps = {
   bombCount: 0,
   flagsPlaced: 0,
   placeFlag: () => {},
+  refreshBoard: () => {},
 };
 
-const GridBoardDisplay = ({ boardData, gameStatus, bombCount, flagsPlaced, placeFlag }) => {
+const GridBoardDisplay = ({
+  boardData,
+  gameStatus,
+  bombCount,
+  flagsPlaced,
+  placeFlag,
+  refreshBoard,
+}) => {
   return (
     <div className="board">
+      <Button onClick={refreshBoard}>Reset Board</Button>
+
       <div style={{ color: 'black', textAlign: 'center', marginBottom: '5vh' }}>
         <h2>{gameStatus}</h2>
         <div className="info-container">
@@ -33,7 +45,7 @@ const GridBoardDisplay = ({ boardData, gameStatus, bombCount, flagsPlaced, place
         </div>
       </div>
 
-      <div className="grid-board">
+      <div className={`grid-board ${gameStatus !== 'In Progress' ? 'overlay' : null}`}>
         {boardData.map(row => {
           return row.map(cell => {
             return (
@@ -43,6 +55,7 @@ const GridBoardDisplay = ({ boardData, gameStatus, bombCount, flagsPlaced, place
                   y={cell.y}
                   isBomb={cell.isBomb}
                   isFlag={cell.isFlag}
+                  isHidden={cell.isHidden}
                   placeFlag={placeFlag}
                 />
               </div>

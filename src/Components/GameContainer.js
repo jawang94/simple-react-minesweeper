@@ -1,5 +1,4 @@
 import React, { useState, memo } from 'react';
-import './Styles/GameContainer.css';
 import GameDisplay from './GameDisplay';
 
 const GameContainer = () => {

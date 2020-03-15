@@ -13,20 +13,27 @@ const propTypes = {
 const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
   const initState = {
     boardData: [],
+    bombSet: new Set(),
+    flagSet: new Set(),
     gameStatus: 'In Progress',
     bombCount: totalBombs,
     flagsPlaced: 0,
   };
+  const [refresh, toggleRefresh] = useState(false);
   const [state, updateState] = useState(initState);
+
+  const refreshBoard = () => {
+    toggleRefresh(!refresh);
+    updateState({ ...initState });
+  };
 
   const createBoard = ({ rows, columns, totalBombs }) => {
     if (!rows || !columns) return;
 
     let data = generateMatrix(rows, columns);
-    data = generateBombs(data, rows, columns, totalBombs);
-    console.log(data);
-
-    return updateState({ ...state, boardData: data });
+    const { boardData, bombSet } = generateBombs(data, rows, columns, totalBombs);
+    console.log(bombSet);
+    return updateState({ ...state, boardData, bombSet });
   };
 
   const generateMatrix = (rows, columns) => {
@@ -41,6 +48,7 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
           y: j,
           isBomb: false,
           isFlag: false,
+          isHidden: true,
         };
       }
     }
@@ -48,27 +56,8 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     return emptyMatrix;
   };
 
-  const placeFlag = (click, x, y) => {
-    click.preventDefault();
-    let currentBoard = state.boardData;
-    let currentFlags = state.flagsPlaced;
-
-    if (currentBoard[x][y].isFlag) {
-      currentBoard[x][y].isFlag = false;
-      currentFlags -= 1;
-    } else {
-      currentBoard[x][y].isFlag = true;
-      currentFlags += 1;
-    }
-
-    updateState({
-      ...state,
-      boardData: currentBoard,
-      flagsPlaced: currentFlags,
-    });
-  };
-
   const generateBombs = (boardData, numberOfRows, numberOfColumns, bombsNeeded) => {
+    let bombSet = state.bombSet;
     let generatedBombs = 0;
     let x = 0;
     let y = 0;
@@ -81,19 +70,64 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
       else if (!boardData[x][y].isBomb) {
         boardData[x][y].isBomb = true;
         generatedBombs += 1;
+        bombSet.add(boardData[x][y]);
       } else break;
     }
 
-    return boardData;
+    return { boardData, bombSet };
+  };
+
+  const placeFlag = (click, x, y) => {
+    click.preventDefault();
+    let currentBoard = state.boardData;
+    let currentFlagSet = state.flagSet;
+    let currentGameStatus = state.gameStatus;
+
+    if (currentBoard[x][y].isFlag) {
+      currentBoard[x][y].isFlag = false;
+      currentFlagSet.delete(currentBoard[x][y]);
+    } else {
+      currentBoard[x][y].isFlag = true;
+      currentFlagSet.add(currentBoard[x][y]);
+    }
+    console.log(currentFlagSet, state.bombSet);
+
+    if (currentFlagSet.size >= state.bombCount) {
+      const parseFlagsAndBombs = () => {
+        let flags = state.flagSet;
+        let bombs = state.bombSet;
+
+        for (let flag of flags.keys()) {
+          if (!bombs.has(flag)) {
+            alert('Boom, yer dead matey.');
+
+            return 'Loser';
+          }
+        }
+        alert('You made it! Nice work champ.');
+
+        return 'Winner';
+      };
+
+      currentGameStatus = parseFlagsAndBombs();
+    }
+
+    updateState({
+      ...state,
+      boardData: currentBoard,
+      flagsPlaced: currentFlagSet.size,
+      flagSet: currentFlagSet,
+      gameStatus: currentGameStatus,
+    });
   };
 
   useEffect(() => {
     createBoard(gameSettings);
     // disabling unnecessary eslint error for effect dependencies
     // eslint-disable-next-line
-  }, []);
+  }, [refresh]);
 
-  return <GridBoardDisplay {...state} placeFlag={placeFlag} />;
+  return <GridBoardDisplay {...state} placeFlag={placeFlag} refreshBoard={refreshBoard} />;
 };
 GridBoardContainer.propTypes = propTypes;
 

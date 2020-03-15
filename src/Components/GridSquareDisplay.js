@@ -9,19 +9,25 @@ const propTypes = {
   y: PropTypes.number.isRequired,
   isBomb: PropTypes.bool,
   isFlag: PropTypes.bool,
+  isHidden: PropTypes.bool,
   placeFlag: PropTypes.func,
 };
-const defaultProps = { isBomb: false, isFlag: false, placeFlag: () => {} };
+const defaultProps = { isBomb: false, isFlag: false, isHidden: false, placeFlag: () => {} };
 
-const GridSquareDisplay = ({ x, y, isBomb, isFlag, placeFlag }) => {
+const GridSquareDisplay = ({ x, y, isBomb, isFlag, isHidden, placeFlag }) => {
   useEffect(() => {}, [isFlag]);
 
   return (
-    <div className="grid-square" onContextMenu={e => placeFlag(e, x, y)}>
-      {isBomb ? (
+    <div
+      className={`grid-square ${isHidden ? 'hidden' : null}`}
+      onContextMenu={e => placeFlag(e, x, y)}
+    >
+      {isHidden ? (
+        isFlag ? (
+          <img src={flag} alt="flagemoji" />
+        ) : null
+      ) : isBomb ? (
         <img src={bomb} alt="bombemoji" />
-      ) : isFlag ? (
-        <img src={flag} alt="flagemoji" />
       ) : (
         <span>lol</span>
       )}

@@ -11,5 +11,9 @@ img {
   justify-content: center;
   float: left;
   cursor: pointer;
-  background: rgb(44, 173, 216);
+  background: rgb(68, 197, 240);
+}
+
+.hidden {
+  background: rgb(28, 29, 29);
 }
