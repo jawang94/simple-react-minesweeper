@@ -4,14 +4,20 @@ import GridSquareContainer from './GridSquareContainer';
 import './Styles/GridBoardDisplay.css';
 
 const propTypes = {
-  gridMatrix: PropTypes.array,
+  boardData: PropTypes.array,
   gameStatus: PropTypes.string,
   bombCount: PropTypes.number,
 };
 
-const GridBoardDisplay = ({ gridMatrix, gameStatus, bombCount }) => {
+const defaultProps = {
+  boardData: [],
+  gameStatus: '',
+  bombCount: 0,
+};
+
+const GridBoardDisplay = ({ boardData, gameStatus, bombCount }) => {
   return (
-    <div className="grid-board">
+    <div className="board">
       <div style={{ color: 'black', textAlign: 'center', marginBottom: '5vh' }}>
         <h1>{gameStatus}</h1>
         <h6>
@@ -24,18 +30,21 @@ const GridBoardDisplay = ({ gridMatrix, gameStatus, bombCount }) => {
         </h6>
       </div>
 
-      {gridMatrix.map(row => {
-        return row.map(cell => {
-          return (
-            <div key={cell.x * row.length + cell.y}>
-              <GridSquareContainer />
-            </div>
-          );
-        });
-      })}
+      <div className="grid-board">
+        {boardData.map(row => {
+          return row.map(cell => {
+            return (
+              <div className="cell" key={cell.x + cell.y}>
+                <GridSquareContainer isBomb={cell.isBomb} />
+              </div>
+            );
+          });
+        })}
+      </div>
     </div>
   );
 };
 GridBoardDisplay.propTypes = propTypes;
+GridBoardDisplay.defaultProps = defaultProps;
 
 export default memo(GridBoardDisplay);

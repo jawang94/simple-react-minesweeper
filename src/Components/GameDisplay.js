@@ -22,7 +22,15 @@ const propTypes = {
   signedIn: PropTypes.bool,
   gameSettings: PropTypes.object,
 };
-const defaultProps = {};
+const defaultProps = {
+  updateUserName: () => {},
+  updateAllegiance: () => {},
+  handleSignInClick: () => {},
+  userName: '',
+  allegiance: '',
+  signedIn: false,
+  gameSettings: {},
+};
 
 const GameDisplay = ({
   updateUserName,
@@ -39,12 +47,11 @@ const GameDisplay = ({
   return (
     <>
       {signedIn ? (
-        <div>
-          <h2 style={{ color: 'grey' }}>
+        <div className="game-container">
+          <h4 className="header">
             Welcome <span style={{ color: 'black' }}>{userName}</span> of{' '}
             <span style={{ color: 'green' }}>{allegiance}</span>
-          </h2>
-
+          </h4>
           <GridBoardContainer gameSettings={gameSettings} />
         </div>
       ) : (
@@ -74,6 +81,7 @@ const GameDisplay = ({
               </InputGroupButtonDropdown>
 
               <Input placeholder="...and enter your username" onChange={updateUserName} />
+
               <InputGroupAddon addonType="append">
                 <Button
                   color="success"

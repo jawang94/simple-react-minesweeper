@@ -1,9 +1,15 @@
+img {
+  height: 25px;
+}
+
 .grid-square {
-  background: darkslategrey;
-  margin: 2px;
-  float: left;
-  line-height: 50px;
   height: 50px;
   width: 50px;
+  margin: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
   cursor: pointer;
+  background: rgb(44, 173, 216);
 }
