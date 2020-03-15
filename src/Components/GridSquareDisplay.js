@@ -1,16 +1,23 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import './Styles/GridSquareDisplay.css';
 import bomb from '../Static/bomb.png';
 import flag from '../Static/flag.png';
 import PropTypes from 'prop-types';
 
-const propTypes = { isBomb: PropTypes.bool, isFlag: PropTypes.bool };
-const defaultProps = { isBomb: false, isFlag: false };
+const propTypes = {
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  isBomb: PropTypes.bool,
+  isFlag: PropTypes.bool,
+  placeFlag: PropTypes.func,
+};
+const defaultProps = { isBomb: false, isFlag: false, placeFlag: () => {} };
 
-const GridSquareDisplay = ({ isBomb, isFlag }) => {
-  console.log(isBomb);
+const GridSquareDisplay = ({ x, y, isBomb, isFlag, placeFlag }) => {
+  useEffect(() => {}, [isFlag]);
+
   return (
-    <div className="grid-square">
+    <div className="grid-square" onContextMenu={e => placeFlag(e, x, y)}>
       {isBomb ? (
         <img src={bomb} alt="bombemoji" />
       ) : isFlag ? (

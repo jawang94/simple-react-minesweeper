@@ -1,5 +1,23 @@
+img {
+  height: 35px;
+  margin-right: 0.5rem;
+}
+
 .grid-board {
   margin: 0 auto;
   overflow: auto;
   max-width: 520px;
+}
+
+.info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.divider {
+  border-left: 2px solid black;
+  height: 30px;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }

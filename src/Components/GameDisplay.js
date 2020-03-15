@@ -20,7 +20,7 @@ const propTypes = {
   userName: PropTypes.string,
   allegiance: PropTypes.string,
   signedIn: PropTypes.bool,
-  gameSettings: PropTypes.object,
+  gameSettings: PropTypes.object.isRequired,
 };
 const defaultProps = {
   updateUserName: () => {},
@@ -29,7 +29,6 @@ const defaultProps = {
   userName: '',
   allegiance: '',
   signedIn: false,
-  gameSettings: {},
 };
 
 const GameDisplay = ({

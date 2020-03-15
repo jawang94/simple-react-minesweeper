@@ -2,13 +2,12 @@ import React, { useState, useEffect, memo } from 'react';
 import PropTypes from 'prop-types';
 import GridBoardDisplay from './GridBoardDisplay';
 
-const propTypes = { gameSettings: PropTypes.object };
-const defaultProps = {
-  gameSettings: {
-    rows: 0,
-    columns: 0,
-    totalBombs: 0,
-  },
+const propTypes = {
+  gameSettings: PropTypes.shape({
+    rows: PropTypes.number.isRequired,
+    columns: PropTypes.number.isRequired,
+    totalBombs: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
@@ -16,6 +15,7 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     boardData: [],
     gameStatus: 'In Progress',
     bombCount: totalBombs,
+    flagsPlaced: 0,
   };
   const [state, updateState] = useState(initState);
 
@@ -48,27 +48,43 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     return emptyMatrix;
   };
 
+  const placeFlag = (click, x, y) => {
+    click.preventDefault();
+    let currentBoard = state.boardData;
+    let currentFlags = state.flagsPlaced;
+
+    if (currentBoard[x][y].isFlag) {
+      currentBoard[x][y].isFlag = false;
+      currentFlags -= 1;
+    } else {
+      currentBoard[x][y].isFlag = true;
+      currentFlags += 1;
+    }
+
+    updateState({
+      ...state,
+      boardData: currentBoard,
+      flagsPlaced: currentFlags,
+    });
+  };
+
   const generateBombs = (boardData, numberOfRows, numberOfColumns, bombsNeeded) => {
     let generatedBombs = 0;
-    let row = 0;
-    let column = 0;
+    let x = 0;
+    let y = 0;
 
     while (generatedBombs < bombsNeeded) {
-      row = generateRandomNumber(numberOfRows);
-      column = generateRandomNumber(numberOfColumns);
+      x = Math.floor(Math.random() * numberOfRows);
+      y = Math.floor(Math.random() * numberOfColumns);
 
-      if (boardData[row][column].isBomb) continue;
-      else if (!boardData[row][column].isBomb) {
-        boardData[row][column].isBomb = true;
+      if (boardData[x][y].isBomb) continue;
+      else if (!boardData[x][y].isBomb) {
+        boardData[x][y].isBomb = true;
         generatedBombs += 1;
       } else break;
     }
 
     return boardData;
-  };
-
-  const generateRandomNumber = max => {
-    return Math.floor(Math.random() * max);
   };
 
   useEffect(() => {
@@ -77,9 +93,8 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     // eslint-disable-next-line
   }, []);
 
-  return <GridBoardDisplay {...state} />;
+  return <GridBoardDisplay {...state} placeFlag={placeFlag} />;
 };
 GridBoardContainer.propTypes = propTypes;
-GridBoardContainer.defaultProps = defaultProps;
 
 export default memo(GridBoardContainer);
