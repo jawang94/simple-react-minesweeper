@@ -14,9 +14,9 @@ import PropTypes from 'prop-types';
 import GridBoardContainer from './GridBoardContainer';
 
 const propTypes = {
-  updateUserName: PropTypes.function,
-  updateAllegiance: PropTypes.function,
-  handleSignInClick: PropTypes.function,
+  updateUserName: PropTypes.func,
+  updateAllegiance: PropTypes.func,
+  handleSignInClick: PropTypes.func,
   userName: PropTypes.string,
   allegiance: PropTypes.string,
   signedIn: PropTypes.bool,

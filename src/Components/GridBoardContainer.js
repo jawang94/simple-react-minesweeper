@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import PropTypes from 'prop-types';
 import GridBoardDisplay from './GridBoardDisplay';
 
@@ -82,4 +82,4 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
 GridBoardContainer.propTypes = propTypes;
 GridBoardContainer.defaultProps = defaultProps;
 
-export default GridBoardContainer;
+export default memo(GridBoardContainer);

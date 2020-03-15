@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import './Styles/GridSquareDisplay.css';
-import bomb from './Static/bomb.png';
-import flag from './Static/flag.png';
+import bomb from '../Static/bomb.png';
+import flag from '../Static/flag.png';
 import PropTypes from 'prop-types';
 
 const propTypes = { isBomb: PropTypes.bool, isFlag: PropTypes.bool };
