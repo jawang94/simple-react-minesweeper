@@ -24,25 +24,25 @@ A zero square is a square with no bombs in any of the squares adjacent to it (di
 
 If a win or lose scenario is encountered, the entire board will be revealed and the game will be frozen.
 
-### To place a flag: Right click on a square.
+### To place a flag: Right click on a square
 
 Flags may not be removed after placement.
 Maximum number of flags allowed is equal to your difficulty: Easy => 5, Medium => 10, Hard => 15.
 Once the maximum number of flags is reached, the game will end and display either a win or lose alert.
 Placing a flag on a bomb square will decrease the number of bombs remaining.
 
-### To reveal a square: Left click on a square.
+### To reveal a square: Left click on a square
 
 Left clicking on a bomb will end the game immediately
 Left clicking on a **zero** square will also reveal adjacent squares. This effect will propogate until no more adjacent zero squares can be reached.
 Left clicking on a flagged square does nothing.
 Left clicking on a previously revealed square does nothing.
 
-### How to win:
+### How to win
 
 Correctly flag all bombs.
 
-### How to lose:
+### How to lose
 
 Reveal a bomb **or** incorrectly flagging one or more bombs after using up all flags.
 
