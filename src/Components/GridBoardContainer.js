@@ -25,8 +25,8 @@ const GridBoardContainer = ({
 }) => {
   const statusMap = {
     default: 'In Progress',
-    loser: { status: 'You Lost :(', message: 'Boom, yer dead matey.' },
-    winner: { status: 'You Won! :D', message: 'You made it! Nice work champ.' },
+    loser: { status: 'You Lost :(' },
+    winner: { status: 'You Won! :D' },
   };
   const initState = {
     boardData: [],

@@ -1,69 +1,87 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# VantMineSweeper
 
-## Available Scripts
+## How to run
 
-In the project directory, you can run:
+1. Clone the repository to your machine.
+2. Once in the project directory, run `yarn install`.
+3. Once packages have been installed, run `yarn start`.
 
-### `yarn start`
+If app does not open automatically, navigate to [http://localhost:3000](http://localhost:3000) in your browser of choice.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Game Overview
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Select an allegiance, username, and difficulty to unlock the Login button.
+Number of bombs generated varies by difficulty: Easy => 5, Medium => 10, Hard => 15.
 
-### `yarn test`
+To reset the game, either click on the Reset Board button on the left.
+To change difficulty, use the dropdown on the left.
+**Note: Changing difficulty will reset the board.**
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Number of bombs remaining and number of flags placed are indicated on the game board.
+Number of bombs will always start at the maximum based on difficulty. Number of flags will always start at 0.
 
-### `yarn build`
+A zero square is a square with no bombs in any of the squares adjacent to it (diagonals included);
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+If a win or lose scenario is encountered, the entire board will be revealed and the game will be frozen.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### To place a flag: Right click on a square.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Flags may not be removed after placement.
+Maximum number of flags allowed is equal to your difficulty: Easy => 5, Medium => 10, Hard => 15.
+Once the maximum number of flags is reached, the game will end and display either a win or lose alert.
+Placing a flag on a bomb square will decrease the number of bombs remaining.
 
-### `yarn eject`
+### To reveal a square: Left click on a square.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Left clicking on a bomb will end the game immediately
+Left clicking on a **zero** square will also reveal adjacent squares. This effect will propogate until no more adjacent zero squares can be reached.
+Left clicking on a flagged square does nothing.
+Left clicking on a previously revealed square does nothing.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### How to win:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Correctly flag all bombs.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### How to lose:
 
-## Learn More
+Reveal a bomb **or** incorrectly flagging one or more bombs after using up all flags.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Technical Notes
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Component Structure
 
-### Code Splitting
+As a habit, keeping components light, targeted, and modular is better than the inverse. Without over-modularizing, it was decided
+that the app should have 3 components (a game component, a grid board component, and a grid square component). Each component has
+a `Container` file which handles logic and a corresponding `Display` file which handles rendering and any light front-end logic.
+Each `Display` file has a corresponding `.css` file located within the `/Styles` directory. Styling is a mix between inline css and imported css. Could have gone about this in several ways (css modules, inline bootstrap, styled jsx, etc), but for the purpose of this app, the cleanest method was chosen (least amount of clutter in the display files).
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+### General Code Guidelines
 
-### Analyzing the Bundle Size
+Code is always declared in this order:\
+| Imports
+| Prop Types
+| Default Props
+| Component Method
+| Attaching props and default props to the component
+| Export statement w/ comment indicating file(s) to which component is exported
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+Components are all functional and stateless with hooks.
+Props and objects are generally destructured unless it makes more sense (subjectively) not to.
+Methods are commented with general functionality.
+All prop threading, typing, and default value declarations are alphabetized.
+Lengthy object declarations are also alphabetized unless it makes more sense (subjectively) not to.
 
-### Making a Progressive Web App
+### Design Key Points
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+Since the game is so light, speed is not a huge factor however, still best to optimize where possible.
 
-### Advanced Configuration
+Heaviest computation is certainly on board creation and any time the 2d matrix needs to be traversed.
+For this reason, objects are used as much as possible to cache high importance data for O(1) lookups (E.g. for flags, bombs, and matrix data). This way we only do the work one time on game load.
+In this way we can essentially keep in-game interactions to near-constant time (the adjacent square traversal is pretty random but theoretically could get close to O(XY) time if user's luck is amazingly good yet ironically terrible).
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+**Areas for improvement:**
+On game load, to speed things up we could try to plant as we create the matrix with a more involved random number function that returns true (plant) a certain percentage of the time. As far as calculating adjacent bombs, can imagine some genius way to go about it in one traversal but realistically not sure if the complexity would net any real world gains.
 
-### Deployment
+### Final Thoughts
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
-# vant-ai-minesweeper
+Was good fun. Heard of Minesweeper before but had never played it. Feel like I'm slightly more cultured now and a marginally better game designer.

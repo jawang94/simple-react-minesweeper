@@ -10,7 +10,7 @@ const GameContainer = () => {
   const initState = {
     allegiance: '',
     userName: '',
-    signedIn: true, // set to mock data. remove prior to submission
+    signedIn: false,
     difficulty: '',
     gameSettings: { rows: 10, columns: 10, totalBombs: 10 },
   };
