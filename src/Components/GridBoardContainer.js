@@ -47,7 +47,7 @@ const GridBoardContainer = ({
     toggleRefresh(!refresh);
   };
 
-  const handleUpdateDifficulty = async value => {
+  const handleUpdateDifficulty = value => {
     updateDifficulty(value);
     refreshBoard();
   };
