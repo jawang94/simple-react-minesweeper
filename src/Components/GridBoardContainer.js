@@ -70,7 +70,7 @@ const GridBoardContainer = ({
 
   // Creates a 2d matrix of objects with default properties based on game board dimensions.
   const generateMatrix = (rows, columns) => {
-    let emptyMatrix = [];
+    const emptyMatrix = [];
 
     for (let i = 0; i < rows; i++) {
       emptyMatrix.push([]);
@@ -92,8 +92,8 @@ const GridBoardContainer = ({
 
   // Randomly plants bombs within the 2d matrix and keeps track of the chosen squares via a bombSet.
   const generateBombs = (emptyMatrix, numberOfRows, numberOfColumns, bombsNeeded) => {
-    let partiallyFilledMatrix = emptyMatrix;
-    let bombSet = state.bombSet;
+    const partiallyFilledMatrix = emptyMatrix;
+    const bombSet = state.bombSet;
     let generatedBombs = 0;
     let x = 0;
     let y = 0;
@@ -115,7 +115,7 @@ const GridBoardContainer = ({
 
   // For each square of the 2d matrix, finds how many bombs are adjacent to it and updates the object property.
   const generateSquareValues = partiallyFilledMatrix => {
-    let fullyFilledMatrix = partiallyFilledMatrix;
+    const fullyFilledMatrix = partiallyFilledMatrix;
 
     fullyFilledMatrix.forEach(row => {
       row.forEach(({ x, y }) => {
@@ -129,9 +129,9 @@ const GridBoardContainer = ({
   // Flags a square (if not already), decrements bomb count if a bomb is on the square, handles win/loss scenario if max flags placed
   const placeFlag = (clickEvent, x, y) => {
     clickEvent.preventDefault();
-    let currentBoard = state.boardData;
-    let currentFlagSet = state.flagSet;
-    let currentBombSet = state.bombSet;
+    const currentBoard = state.boardData;
+    const currentFlagSet = state.flagSet;
+    const currentBombSet = state.bombSet;
     let currentBombCount = state.bombCount;
     let currentGameStatus = state.gameStatus;
 
@@ -147,8 +147,6 @@ const GridBoardContainer = ({
 
     if (currentFlagSet.size >= totalBombs) {
       const parseFlagsAndBombs = () => {
-        const currentFlagSet = state.flagSet;
-
         for (const flag of currentFlagSet.keys()) {
           if (!currentBombSet.has(flag)) {
             alert('Aw shucks, better luck next time.');
@@ -206,7 +204,7 @@ const GridBoardContainer = ({
 
   // Gets all adjacent squares for the selected coordinate, reveals current square if appropriate, and recurses if current square is a "zero" square.
   const checkAdjacentSquares = (x, y, currentBoard) => {
-    let adjacentSquares = getAdjacentSquares(x, y, currentBoard);
+    const adjacentSquares = getAdjacentSquares(x, y, currentBoard);
 
     // Note x and y in the below iterator are deconstructed from adjacentSquares. Not the same as the parent scope x and y.
     adjacentSquares.forEach(({ x, y }) => {
@@ -229,7 +227,7 @@ const GridBoardContainer = ({
 
   // Checks all squares adjacent to provided coordinate && returns either the squares or the number of adjacent bombs.
   const getAdjacentSquares = (x, y, currentBoard, returnBombCount) => {
-    let adjacentSquares = [];
+    const adjacentSquares = [];
     let adjacentBombs = 0;
 
     if (x > 0) {
