@@ -1,43 +1,42 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
+import PropTypes from 'prop-types';
 import './Styles/GridSquareDisplay.css';
 import bomb from '../Static/bomb.png';
 import flag from '../Static/flag.png';
-import PropTypes from 'prop-types';
 
 const propTypes = {
-  x: PropTypes.number.isRequired,
-  y: PropTypes.number.isRequired,
+  adjacentBombs: PropTypes.number,
+  gameOverBreaker: PropTypes.bool,
+  handleLeftClick: PropTypes.func,
   isBomb: PropTypes.bool,
   isFlag: PropTypes.bool,
   isHidden: PropTypes.bool,
-  adjacentBombs: PropTypes.number,
-  gameOverBreaker: PropTypes.bool,
   placeFlag: PropTypes.func,
-  handleLeftClick: PropTypes.func,
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
 };
+
 const defaultProps = {
+  adjacentBombs: 0,
+  gameOverBreaker: false,
+  handleLeftClick: () => {},
   isBomb: false,
   isFlag: false,
   isHidden: true,
-  adjacentBombs: 0,
-  gameOverBreaker: false,
   placeFlag: () => {},
-  handleLeftClick: () => {},
 };
 
 const GridSquareDisplay = ({
-  x,
-  y,
+  adjacentBombs,
+  gameOverBreaker,
+  handleLeftClick,
   isBomb,
   isFlag,
   isHidden,
-  adjacentBombs,
-  gameOverBreaker,
   placeFlag,
-  handleLeftClick,
+  x,
+  y,
 }) => {
-  useEffect(() => {}, [isFlag]);
-
   return (
     <button
       className={`grid-square ${isHidden && !gameOverBreaker ? 'hidden' : null}`}
@@ -60,3 +59,4 @@ GridSquareDisplay.propTypes = propTypes;
 GridSquareDisplay.defaultProps = defaultProps;
 
 export default memo(GridSquareDisplay);
+// Exports to ./GridSquareContainer.js

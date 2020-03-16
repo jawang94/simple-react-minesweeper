@@ -3,14 +3,26 @@ import PropTypes from 'prop-types';
 import GridBoardDisplay from './GridBoardDisplay';
 
 const propTypes = {
+  difficulty: PropTypes.string,
+  updateDifficulty: PropTypes.func,
   gameSettings: PropTypes.shape({
-    rows: PropTypes.number.isRequired,
     columns: PropTypes.number.isRequired,
+    rows: PropTypes.number.isRequired,
     totalBombs: PropTypes.number.isRequired,
   }).isRequired,
 };
 
-const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
+const defaultProps = {
+  difficulty: 'Medium',
+  updateDifficulty: () => {},
+};
+
+const GridBoardContainer = ({
+  difficulty,
+  updateDifficulty,
+  gameSettings,
+  gameSettings: { totalBombs },
+}) => {
   const statusMap = {
     default: 'In Progress',
     loser: { status: 'You Lost :(', message: 'Boom, yer dead matey.' },
@@ -18,22 +30,29 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
   };
   const initState = {
     boardData: [],
+    bombCount: totalBombs,
     bombSet: new Set(),
+    flagCount: 0,
     flagSet: new Set(),
     gameStatus: statusMap.default,
-    bombCount: totalBombs,
-    flagCount: 0,
   };
   const [refresh, toggleRefresh] = useState(false);
   const [gameOverBreaker, triggerGameOverBreaker] = useState(false);
   const [state, updateState] = useState(initState);
 
+  // Refreshes the game state and recreates the board. Triggered by 'Change Difficulty' && 'Reset Board' buttons.
   const refreshBoard = () => {
-    updateState({ ...initState });
+    updateState({ ...initState, bombCount: gameSettings.totalBombs });
     triggerGameOverBreaker(false);
     toggleRefresh(!refresh);
   };
 
+  const handleUpdateDifficulty = async value => {
+    updateDifficulty(value);
+    refreshBoard();
+  };
+
+  // Calls on three helper methods to create the game board matrix && populate with values.
   const createBoard = ({ rows, columns, totalBombs }) => {
     if (!rows || !columns) return;
 
@@ -45,24 +64,25 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
       totalBombs,
     );
     const fullyFilledMatrix = generateSquareValues(partiallyFilledMatrix);
-    console.log(fullyFilledMatrix);
+
     return updateState({ ...state, boardData: fullyFilledMatrix, bombSet });
   };
 
+  // Creates a 2d matrix of objects with default properties based on game board dimensions.
   const generateMatrix = (rows, columns) => {
     let emptyMatrix = [];
 
     for (let i = 0; i < rows; i++) {
       emptyMatrix.push([]);
       for (let j = 0; j < columns; j++) {
-        // NOTE: Default properties of each cell declared here
+        // Default properties of each square are created here.
         emptyMatrix[i][j] = {
-          x: j,
-          y: i,
+          adjacentBombs: 0,
           isBomb: false,
           isFlag: false,
           isHidden: true,
-          adjacentBombs: 0,
+          x: j,
+          y: i,
         };
       }
     }
@@ -70,6 +90,7 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     return emptyMatrix;
   };
 
+  // Randomly plants bombs within the 2d matrix and keeps track of the chosen squares via a bombSet.
   const generateBombs = (emptyMatrix, numberOfRows, numberOfColumns, bombsNeeded) => {
     let partiallyFilledMatrix = emptyMatrix;
     let bombSet = state.bombSet;
@@ -92,6 +113,7 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     return { partiallyFilledMatrix, bombSet };
   };
 
+  // For each square of the 2d matrix, finds how many bombs are adjacent to it and updates the object property.
   const generateSquareValues = partiallyFilledMatrix => {
     let fullyFilledMatrix = partiallyFilledMatrix;
 
@@ -104,6 +126,7 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     return fullyFilledMatrix;
   };
 
+  // Flags a square (if not already), decrements bomb count if a bomb is on the square, handles win/loss scenario if max flags placed
   const placeFlag = (clickEvent, x, y) => {
     clickEvent.preventDefault();
     let currentBoard = state.boardData;
@@ -121,15 +144,13 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
       currentBoard[y][x].isFlag = true;
       currentFlagSet.add(currentBoard[y][x]);
     }
-    console.log(currentFlagSet, currentBombSet);
 
-    if (currentFlagSet.size >= 10) {
+    if (currentFlagSet.size >= totalBombs) {
       const parseFlagsAndBombs = () => {
-        let flags = state.flagSet;
-        let bombs = currentBombSet;
+        const currentFlagSet = state.flagSet;
 
-        for (let flag of flags.keys()) {
-          if (!bombs.has(flag)) {
+        for (const flag of currentFlagSet.keys()) {
+          if (!currentBombSet.has(flag)) {
             alert('Aw shucks, better luck next time.');
 
             return 'loser';
@@ -154,20 +175,20 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     });
   };
 
+  // Ends game if bomb selected otherwise reveals selected square and calls recursive helper method for adjacent squares.
   const handleLeftClick = (clickEvent, x, y) => {
     clickEvent.preventDefault();
     let currentBoard = state.boardData;
     if (currentBoard[y][x].isRevealed || currentBoard[y][x].isFlag) return;
 
     if (currentBoard[y][x].isBomb) {
-      let zeroOutHiddenSquares = 0;
-
       triggerGameOverBreaker(true);
+
       updateState({
         ...state,
         gameStatus: statusMap.loser.status,
-        hiddenSquareCount: zeroOutHiddenSquares,
       });
+
       alert('Boom, yer dead matey.');
     } else {
       currentBoard[y][x].isHidden = false;
@@ -176,7 +197,6 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
         currentBoard = checkAdjacentSquares(x, y, currentBoard);
       }
 
-      console.log(currentBoard);
       updateState({
         ...state,
         boardData: currentBoard,
@@ -184,10 +204,11 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     }
   };
 
+  // Gets all adjacent squares for the selected coordinate, reveals current square if appropriate, and recurses if current square is a "zero" square.
   const checkAdjacentSquares = (x, y, currentBoard) => {
     let adjacentSquares = getAdjacentSquares(x, y, currentBoard);
-    console.log(adjacentSquares);
 
+    // Note x and y in the below iterator are deconstructed from adjacentSquares. Not the same as the parent scope x and y.
     adjacentSquares.forEach(({ x, y }) => {
       if (
         !currentBoard[y][x].isFlag &&
@@ -195,18 +216,18 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
         currentBoard[y][x].isHidden
       ) {
         currentBoard[y][x].isHidden = false;
-        console.log('trigger');
         if (currentBoard[y][x].adjacentBombs === 0) {
           checkAdjacentSquares(x, y, currentBoard);
         }
       }
+
       return null;
     });
 
-    console.log('board', currentBoard);
     return currentBoard;
   };
 
+  // Checks all squares adjacent to provided coordinate && returns either the squares or the number of adjacent bombs.
   const getAdjacentSquares = (x, y, currentBoard, returnBombCount) => {
     let adjacentSquares = [];
     let adjacentBombs = 0;
@@ -264,9 +285,9 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
     return adjacentSquares;
   };
 
+  // Effect which runs on render && subsequently whenever the refresh state is toggled via changing difficulty or resetting the board.
   useEffect(() => {
     createBoard(gameSettings);
-    console.log('render test');
     // disabling unnecessary eslint error for effect dependencies
     // eslint-disable-next-line
   }, [refresh]);
@@ -274,13 +295,17 @@ const GridBoardContainer = ({ gameSettings, gameSettings: { totalBombs } }) => {
   return (
     <GridBoardDisplay
       {...state}
+      difficulty={difficulty}
+      gameOverBreaker={gameOverBreaker}
+      handleLeftClick={handleLeftClick}
+      handleUpdateDifficulty={handleUpdateDifficulty}
       placeFlag={placeFlag}
       refreshBoard={refreshBoard}
-      handleLeftClick={handleLeftClick}
-      gameOverBreaker={gameOverBreaker}
     />
   );
 };
 GridBoardContainer.propTypes = propTypes;
+GridBoardContainer.defaultProps = defaultProps;
 
 export default memo(GridBoardContainer);
+// Exports to ./GameDisplay.js

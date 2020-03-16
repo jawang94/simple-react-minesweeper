@@ -1,45 +1,73 @@
-import React, { memo } from 'react';
-import { Button } from 'reactstrap';
+import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import GridSquareContainer from './GridSquareContainer';
+import {
+  Button,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  InputGroupButtonDropdown,
+} from 'reactstrap';
 import './Styles/GridBoardDisplay.css';
 import bomb from '../Static/bomb.png';
 import flag from '../Static/flag.png';
 
 const propTypes = {
   boardData: PropTypes.array,
-  gameStatus: PropTypes.string,
   bombCount: PropTypes.number,
+  difficulty: PropTypes.string,
   flagCount: PropTypes.number,
+  gameOverBreaker: PropTypes.bool,
+  gameStatus: PropTypes.string,
+  handleLeftClick: PropTypes.func,
+  handleUpdateDifficulty: PropTypes.func,
   placeFlag: PropTypes.func,
   refreshBoard: PropTypes.func,
-  handleLeftClick: PropTypes.func,
-  gameOverBreaker: PropTypes.bool,
 };
 
 const defaultProps = {
   boardData: [],
-  gameStatus: '',
   bombCount: 0,
+  difficulty: 'Medium',
   flagCount: 0,
+  gameOverBreaker: false,
+  gameStatus: '',
+  handleLeftClick: () => {},
+  handleUpdateDifficulty: () => {},
   placeFlag: () => {},
   refreshBoard: () => {},
-  handleLeftClick: () => {},
-  gameOverBreaker: false,
 };
 
 const GridBoardDisplay = ({
   boardData,
-  gameStatus,
   bombCount,
+  difficulty,
   flagCount,
+  gameOverBreaker,
+  gameStatus,
+  handleLeftClick,
+  handleUpdateDifficulty,
   placeFlag,
   refreshBoard,
-  handleLeftClick,
-  gameOverBreaker,
 }) => {
+  const [difficultyDropdown, toggleDifficultyDropdown] = useState(false);
+
   return (
     <div className="board">
+      <InputGroupButtonDropdown
+        addonType="append"
+        className="change-difficulty"
+        isOpen={difficultyDropdown}
+        toggle={() => toggleDifficultyDropdown(!difficultyDropdown)}
+      >
+        <DropdownToggle caret>{difficulty ? difficulty : 'Change Difficulty'}</DropdownToggle>
+        <DropdownMenu>
+          <DropdownItem onClick={() => handleUpdateDifficulty('Easy')}>Easy</DropdownItem>
+          <DropdownItem onClick={() => handleUpdateDifficulty('Medium')}>Medium</DropdownItem>
+          <DropdownItem onClick={() => handleUpdateDifficulty('Hard')}>Hard</DropdownItem>
+        </DropdownMenu>
+      </InputGroupButtonDropdown>
+
       <Button onClick={refreshBoard}>Reset Board</Button>
 
       <div style={{ color: 'black', textAlign: 'center', marginBottom: '5vh' }}>
@@ -57,15 +85,15 @@ const GridBoardDisplay = ({
             return (
               <div className="square" key={square.x + square.y}>
                 <GridSquareContainer
-                  x={square.x}
-                  y={square.y}
+                  adjacentBombs={square.adjacentBombs}
+                  gameOverBreaker={gameOverBreaker}
+                  handleLeftClick={handleLeftClick}
                   isBomb={square.isBomb}
                   isFlag={square.isFlag}
                   isHidden={square.isHidden}
-                  adjacentBombs={square.adjacentBombs}
-                  gameOverBreaker={gameOverBreaker}
                   placeFlag={placeFlag}
-                  handleLeftClick={handleLeftClick}
+                  x={square.x}
+                  y={square.y}
                 />
               </div>
             );
@@ -79,3 +107,4 @@ GridBoardDisplay.propTypes = propTypes;
 GridBoardDisplay.defaultProps = defaultProps;
 
 export default memo(GridBoardDisplay);
+// Exports to ./GridBoardContainer.js

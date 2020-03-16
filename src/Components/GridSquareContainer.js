@@ -6,3 +6,4 @@ const GridSquareContainer = props => {
 };
 
 export default memo(GridSquareContainer);
+// Exports to ./GridBoardDisplay.js

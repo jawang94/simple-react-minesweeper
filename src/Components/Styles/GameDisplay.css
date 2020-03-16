@@ -8,3 +8,7 @@
 .header {
   color: gray;
 }
+
+.login-bar {
+  max-width: 75vw;
+}

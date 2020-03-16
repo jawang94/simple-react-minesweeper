@@ -1,30 +1,34 @@
 import React, { useState, memo } from 'react';
-import './Styles/GameDisplay.css';
+import PropTypes from 'prop-types';
+import GridBoardContainer from './GridBoardContainer';
 import {
   Button,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
   InputGroup,
   InputGroupAddon,
   InputGroupButtonDropdown,
   Input,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
 } from 'reactstrap';
-import PropTypes from 'prop-types';
-import GridBoardContainer from './GridBoardContainer';
+import './Styles/GameDisplay.css';
 
 const propTypes = {
-  updateUserName: PropTypes.func,
-  updateAllegiance: PropTypes.func,
-  handleSignInClick: PropTypes.func,
-  userName: PropTypes.string,
   allegiance: PropTypes.string,
-  signedIn: PropTypes.bool,
+  difficulty: PropTypes.string,
   gameSettings: PropTypes.object.isRequired,
+  handleSignInClick: PropTypes.func,
+  signedIn: PropTypes.bool,
+  updateAllegiance: PropTypes.func,
+  updateUserName: PropTypes.func,
+  updateDifficulty: PropTypes.func,
+  userName: PropTypes.string,
 };
+
 const defaultProps = {
   updateUserName: () => {},
   updateAllegiance: () => {},
+  updateDifficulty: () => {},
   handleSignInClick: () => {},
   userName: '',
   allegiance: '',
@@ -37,11 +41,13 @@ const GameDisplay = ({
   handleSignInClick,
   userName,
   allegiance,
+  difficulty,
   signedIn,
   gameSettings,
+  updateDifficulty,
 }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggleDropDown = () => setDropdownOpen(!dropdownOpen);
+  const [allegianceDropdown, toggleAllegianceDropdown] = useState(false);
+  const [difficultyDropdown, toggleDifficultyDropdown] = useState(false);
 
   return (
     <>
@@ -51,19 +57,24 @@ const GameDisplay = ({
             Welcome <span style={{ color: 'black' }}>{userName}</span> of{' '}
             <span style={{ color: 'green' }}>{allegiance}</span>
           </h4>
-          <GridBoardContainer gameSettings={gameSettings} />
+
+          <GridBoardContainer
+            gameSettings={gameSettings}
+            difficulty={difficulty}
+            updateDifficulty={updateDifficulty}
+          />
         </div>
       ) : (
         <div>
           <h1>Welcome to VantMineSweeper</h1>
 
-          <div>
+          <div className="login-bar">
             <InputGroup>
               <InputGroupButtonDropdown
                 className="dropdown"
                 addonType="append"
-                isOpen={dropdownOpen}
-                toggle={toggleDropDown}
+                isOpen={allegianceDropdown}
+                toggle={() => toggleAllegianceDropdown(!allegianceDropdown)}
               >
                 <DropdownToggle caret>
                   {allegiance ? allegiance : 'Select your allegiance'}
@@ -81,13 +92,31 @@ const GameDisplay = ({
 
               <Input placeholder="...and enter your username" onChange={updateUserName} />
 
+              <InputGroupButtonDropdown
+                className="dropdown"
+                addonType="append"
+                isOpen={difficultyDropdown}
+                toggle={() => toggleDifficultyDropdown(!difficultyDropdown)}
+              >
+                <DropdownToggle caret>
+                  {difficulty ? difficulty : 'Select Difficulty'}
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem onClick={() => updateDifficulty('Easy')}>Easy</DropdownItem>
+                  <DropdownItem onClick={() => updateDifficulty('Medium')}>Medium</DropdownItem>
+                  <DropdownItem onClick={() => updateDifficulty('Hard')}>Hard</DropdownItem>
+                </DropdownMenu>
+              </InputGroupButtonDropdown>
+
               <InputGroupAddon addonType="append">
                 <Button
                   color="success"
-                  disabled={!userName.length || !allegiance.length}
+                  disabled={!userName.length || !allegiance.length || !difficulty.length}
                   onClick={handleSignInClick}
                 >
-                  {!userName.length || !allegiance.length ? 'Not yet' : 'All set'}
+                  {!userName.length || !allegiance.length || !difficulty.length
+                    ? 'Not yet'
+                    : 'All set'}
                 </Button>
               </InputGroupAddon>
             </InputGroup>
@@ -102,3 +131,4 @@ GameDisplay.propTypes = propTypes;
 GameDisplay.defaultProps = defaultProps;
 
 export default memo(GameDisplay);
+// Exports to ./GameContainer.js
