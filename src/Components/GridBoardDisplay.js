@@ -10,27 +10,33 @@ const propTypes = {
   boardData: PropTypes.array,
   gameStatus: PropTypes.string,
   bombCount: PropTypes.number,
-  flagsPlaced: PropTypes.number,
+  flagCount: PropTypes.number,
   placeFlag: PropTypes.func,
   refreshBoard: PropTypes.func,
+  handleLeftClick: PropTypes.func,
+  gameOverBreaker: PropTypes.bool,
 };
 
 const defaultProps = {
   boardData: [],
   gameStatus: '',
   bombCount: 0,
-  flagsPlaced: 0,
+  flagCount: 0,
   placeFlag: () => {},
   refreshBoard: () => {},
+  handleLeftClick: () => {},
+  gameOverBreaker: false,
 };
 
 const GridBoardDisplay = ({
   boardData,
   gameStatus,
   bombCount,
-  flagsPlaced,
+  flagCount,
   placeFlag,
   refreshBoard,
+  handleLeftClick,
+  gameOverBreaker,
 }) => {
   return (
     <div className="board">
@@ -41,22 +47,25 @@ const GridBoardDisplay = ({
         <div className="info-container">
           <img src={bomb} alt="bombemoji" /> {bombCount}
           <div className="divider" />
-          <img src={flag} alt="flagemoji" /> {flagsPlaced}
+          <img src={flag} alt="flagemoji" /> {flagCount}
         </div>
       </div>
 
       <div className={`grid-board ${gameStatus !== 'In Progress' ? 'overlay' : null}`}>
         {boardData.map(row => {
-          return row.map(cell => {
+          return row.map(square => {
             return (
-              <div className="cell" key={cell.x + cell.y}>
+              <div className="square" key={square.x + square.y}>
                 <GridSquareContainer
-                  x={cell.x}
-                  y={cell.y}
-                  isBomb={cell.isBomb}
-                  isFlag={cell.isFlag}
-                  isHidden={cell.isHidden}
+                  x={square.x}
+                  y={square.y}
+                  isBomb={square.isBomb}
+                  isFlag={square.isFlag}
+                  isHidden={square.isHidden}
+                  adjacentBombs={square.adjacentBombs}
+                  gameOverBreaker={gameOverBreaker}
                   placeFlag={placeFlag}
+                  handleLeftClick={handleLeftClick}
                 />
               </div>
             );

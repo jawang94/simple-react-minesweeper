@@ -10,28 +10,50 @@ const propTypes = {
   isBomb: PropTypes.bool,
   isFlag: PropTypes.bool,
   isHidden: PropTypes.bool,
+  adjacentBombs: PropTypes.number,
+  gameOverBreaker: PropTypes.bool,
   placeFlag: PropTypes.func,
+  handleLeftClick: PropTypes.func,
 };
-const defaultProps = { isBomb: false, isFlag: false, isHidden: false, placeFlag: () => {} };
+const defaultProps = {
+  isBomb: false,
+  isFlag: false,
+  isHidden: true,
+  adjacentBombs: 0,
+  gameOverBreaker: false,
+  placeFlag: () => {},
+  handleLeftClick: () => {},
+};
 
-const GridSquareDisplay = ({ x, y, isBomb, isFlag, isHidden, placeFlag }) => {
+const GridSquareDisplay = ({
+  x,
+  y,
+  isBomb,
+  isFlag,
+  isHidden,
+  adjacentBombs,
+  gameOverBreaker,
+  placeFlag,
+  handleLeftClick,
+}) => {
   useEffect(() => {}, [isFlag]);
 
   return (
-    <div
-      className={`grid-square ${isHidden ? 'hidden' : null}`}
-      onContextMenu={e => placeFlag(e, x, y)}
+    <button
+      className={`grid-square ${isHidden && !gameOverBreaker ? 'hidden' : null}`}
+      onContextMenu={clickEvent => placeFlag(clickEvent, x, y)}
+      onClick={clickEvent => handleLeftClick(clickEvent, x, y)}
     >
-      {isHidden ? (
+      {isHidden && !gameOverBreaker ? (
         isFlag ? (
           <img src={flag} alt="flagemoji" />
         ) : null
       ) : isBomb ? (
         <img src={bomb} alt="bombemoji" />
       ) : (
-        <span>lol</span>
+        <span>{adjacentBombs}</span>
       )}
-    </div>
+    </button>
   );
 };
 GridSquareDisplay.propTypes = propTypes;
