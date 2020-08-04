@@ -66,7 +66,7 @@ const GameDisplay = ({
         </div>
       ) : (
         <div>
-          <h1>Welcome to VantMineSweeper</h1>
+          <h1>Welcome to Mediocre Minesweeper</h1>
 
           <div className="login-bar">
             <InputGroup>
@@ -81,11 +81,13 @@ const GameDisplay = ({
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Strong Picks</DropdownItem>
-                  <DropdownItem onClick={() => updateAllegiance('VantAI')}>VantAI</DropdownItem>
+                  <DropdownItem onClick={() => updateAllegiance('Team Jason')}>
+                    Team Jason
+                  </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem header>Weak Picks</DropdownItem>
-                  <DropdownItem onClick={() => updateAllegiance('Not VantAI')}>
-                    Not VantAI
+                  <DropdownItem onClick={() => updateAllegiance('Not Team Jason')}>
+                    Not Team Jason
                   </DropdownItem>
                 </DropdownMenu>
               </InputGroupButtonDropdown>
