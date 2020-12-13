@@ -1,4 +1,4 @@
-# VantMineSweeper
+# MineSweeper
 
 ## How to run
 
